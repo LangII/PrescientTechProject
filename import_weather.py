@@ -1,5 +1,13 @@
 
 
+"""
+Import Weather Job
+
+Utilizing the api module for extraction and the db module for load, extract
+'current' weather and 'forecast' weather from the Open Weather API and load it
+into the 'weather' postgres table.
+"""
+
 import traceback
 from pathlib import Path
 
@@ -40,27 +48,29 @@ def main() -> None:
 
         import_dt = util.getNowDtStr()
 
-        # get lat, lon current data and transform to flat dict
-        current = weather_api.getCurrent(lat, lon)
-        current_flat_dict = getFlatDictFromApiJson('current', import_dt, lat, lon, current)
-
-        # get lat, lon forecasts data and transform to flat dict
+        # get lat, lon current data
+        current = weather_api.getCurrent(lat, lon)                              # EXTRACT
+        # get lat, lon forecasts data
         forecasts = weather_api.getForecasts(lat, lon)
+
+        # transform lat, lon current data to flat dict
+        current_flat_dict = getFlatDictFromApiJson(                             # TRANSFORM
+            'current', import_dt, lat, lon, current
+        )
+        # transform lat, lon forecasts data to flat dict
         forecasts_flat_dicts = []
         for f in forecasts:
             forecasts_flat_dicts += [
                 getFlatDictFromApiJson('forecast', import_dt, lat, lon, f)
             ]
-
         # clean and prep raw data from api for db insert
         insert_data = db.convInsertValuesDataTypes(
             [current_flat_dict] + forecasts_flat_dicts,
             db.WEATHER_TABLE_DATA_TYPE_MAP
         )
+        insert_query = db.buildInsertQuery(INSERT_TABLE, insert_data)
 
-        current_insert_query = db.buildInsertQuery(INSERT_TABLE, insert_data)
-
-        db.executeQuery(current_insert_query, is_select=False)
+        db.executeQuery(insert_query, is_select=False)                          # LOAD
 
     util.log.info(f"finished '{NAME}' job")
 

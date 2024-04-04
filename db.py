@@ -1,5 +1,14 @@
 
 
+"""
+database module
+
+Postgres database access tool, hardcoded to standard local test params, i.e.
+'localhost' and 'postgres'.  executeQuery() is the primary function accepting
+any postgres sql query.  buildInsertQuery() and convInsertValuesDataTypes() are
+helper functions for preparing transforming data into an insert query.
+"""
+
 import os
 import traceback
 import psycopg2, psycopg2.extras
@@ -37,13 +46,13 @@ WEATHER_TABLE_DATA_TYPE_MAP = {
 ################################################################################
 
 
-def getConn() -> psycopg2.extensions.connection:
+def getConn(password:str=POSTGRES_PASSWORD) -> psycopg2.extensions.connection:
     """ get postgres connection """
     return psycopg2.connect(
         host='localhost',
         database='postgres',
         user='postgres',
-        password=POSTGRES_PASSWORD
+        password=password
     )
 
 def executeQuery(query:str, is_select:bool=True, is_log:bool=False) -> util.JsonType:

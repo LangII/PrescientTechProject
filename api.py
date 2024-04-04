@@ -1,10 +1,24 @@
 
 
+"""
+API module
+
+The meat n' potatoes is the _get() method.  And most of the _get() method's
+heavy lifting is done with the backoff decorator.  It handles the majority of
+all request issues.
+
+DOCS = {
+    'home': 'https://openweathermap.org/',
+    'current': 'https://openweathermap.org/current',
+    'forecast': 'https://openweathermap.org/forecast5'
+}
+"""
+
 import os
 import requests
 import backoff
 import traceback
-from requests.exceptions import RequestException, ConnectionError
+from requests.exceptions import RequestException, ConnectionError, SSLError
 
 import util
 
@@ -32,7 +46,7 @@ class OpenWeatherApi:
         self.current_url_ext = current_url_ext
 
     @backoff.on_exception(
-        backoff.expo, (RequestException, ConnectionError), max_time=300,
+        backoff.expo, (RequestException, ConnectionError, SSLError), max_time=300,
         giveup=lambda e: 400 <= e.response.status_code < 500
     )
     def _get(self, url:str, params:dict=None) -> util.JsonType:
