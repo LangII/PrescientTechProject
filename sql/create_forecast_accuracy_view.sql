@@ -75,7 +75,6 @@ CREATE VIEW forecast_accuracy AS
     WHERE
         -- these dt conditions are to get the "goldie locks zone" of data
         -- where there is 100% overlap of all forecast_hours
-        f.dt > (SELECT MIN(import_dt) + INTERVAL '3 DAYS' FROM weather)
+        f.dt > (SELECT MIN(import_dt) + INTERVAL '5 DAYS' FROM weather)
         AND f.dt < CURRENT_TIMESTAMP AT TIME ZONE 'UTC'
-        AND f.forecast_hours <= 72
         AND f.forecast_hours != 0
