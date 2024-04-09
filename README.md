@@ -14,7 +14,7 @@ It is expected to see a trend of a decrease in accuracy the further out (more fo
 \
 **Findings:**\
 \
-![](docs/findings_03.png)\
+![](docs/findings_05.png)\
 X axis = forecast hours\
 Y axis = accuracy (percentage)\
 lines = Represent each of the 7 data values whose accuracy is being calculated.\
@@ -25,7 +25,7 @@ lines = Represent each of the 7 data values whose accuracy is being calculated.\
 \
 The '{}_acc' columns in 'forecast_accuracy' need work.  The current pattern for normalizing the accuracy values works good until I have data values that cross 0.0.  Example:  There is an incident where current_temp is -0.36 and forecast_temp is 4.8.  This gives an accuracy of 15.33.  All accuracies should be between 0.0 and 1.0.\
 \
-Need to update the 'wind_deg_acc' column in 'forecast_accuracy' to account for "wrap around" data.  Example:  If forecast_wind_deg = 355 and current_wind_deg = 5 the difference should be 10.  But instead the current setup results in 350.  This is why under the current conditions, 'wind_deg_acc' has an additional layer of inaccuracy due to pipeline design, not due to data itself.\
+Need to update the 'wind_deg_acc' column in 'forecast_accuracy' to account for "wrap around" data.  Example:  If forecast_wind_deg = 355 and current_wind_deg = 5 the difference should be 10.  But instead the current setup results in 350.  This is why under the current conditions, 'wind_deg_acc' has an additional layer of inaccuracy due to incomplete transformation, not due to data itself.\
 \
 Add monitoring alerts.  Under the current stack, I think the best implementation of monitoring alerts would be an 'alerts_job'.  With scalability in mind, add a job for alerts monitoring, each 'alert' is a SQL query that returns "issues" or "concerns" that we are monitoring for.  Such as add a monitoring query to return all "error" level logs since the last alert check.\
 \
@@ -35,9 +35,11 @@ Add additional layers of analysis between 'forecast_accuracy' and 'forecast_accu
 \
 **Extras:**\
 \
+![](docs/findings_04.png)\
+![](docs/findings_03.png)\
 ![](docs/findings_02.png)\
 ![](docs/findings_01.png)\
 (history of findings, newest at top)\
 \
 ![](docs/the_pipeline.png)\
-(the pipeline import)\
+(pretty pic of the pipeline import)
